@@ -4,7 +4,7 @@
 set -e
 
 sudo apt update
-apt-get install expect
+apt-get -y install expect
 sudo apt -y install nginx
 sudo apt -y install git
 sudo apt -y install mariadb-server mariadb-client
