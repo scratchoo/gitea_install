@@ -69,7 +69,7 @@ sudo chmod +x gitea
 
 sudo cp gitea /usr/local/bin/gitea
 
-sudo nano /etc/systemd/system/gitea.service
+sudo touch /etc/systemd/system/gitea.service
 
 
 cat > /etc/systemd/system/gitea.service <<EOF
@@ -113,3 +113,44 @@ sudo systemctl enable gitea
 sudo systemctl start gitea
 
 sudo systemctl status gitea
+
+sudo rm /etc/nginx/sites-enabled/default
+
+sudo touch /etc/nginx/sites-available/git
+
+read -p "what's your gitea domain name ? " domain_name
+
+cat > /etc/nginx/sites-available/git <<EOF
+upstream gitea {
+    server 127.0.0.1:3000;
+}
+
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name $domain_name;
+    root /var/lib/gitea/public;
+    access_log off;
+    error_log off;
+
+    location / {
+      try_files maintain.html $uri $uri/index.html @node;
+    }
+
+    location @node {
+      client_max_body_size 0;
+      proxy_pass http://localhost:3000;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header Host $http_host;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_max_temp_file_size 0;
+      proxy_redirect off;
+      proxy_read_timeout 120;
+    }
+}
+EOF
+
+sudo ln -s /etc/nginx/sites-available/git /etc/nginx/sites-enabled
+
+sudo systemctl reload nginx.service
