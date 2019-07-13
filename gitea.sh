@@ -4,14 +4,19 @@
 set -e
 
 sudo apt update
-sudo apt-get -y install expect
-sudo apt -y install pwgen
+apt-get -y install expect
+apt -y install pwgen
 sudo apt -y install nginx
 sudo apt -y install git
 sudo apt -y install mariadb-server mariadb-client
 
 CURRENT_MYSQL_PASSWORD=''
-ROOT_PASSWORD=`pwgen -s 10 1`
+
+echo "Please enter root user MySQL password!"
+read mysql_root_password
+
+echo "the password you typed is : \n"
+echo $mysql_root_password
 
 SECURE_MYSQL=$(expect -c "
 set timeout 10
@@ -21,9 +26,9 @@ send \"$CURRENT_MYSQL_PASSWORD\r\"
 expect \"Change the root password?\"
 send \"y\r\"
 expect \"New password:\"
-send \"$ROOT_PASSWORD\r\"
+send \"$mysql_root_password\r\"
 expect \"Re-enter new password:\"
-send \"$ROOT_PASSWORD\r\"
+send \"$mysql_root_password\r\"
 expect \"Remove anonymous users?\"
 send \"y\r\"
 expect \"Disallow root login remotely?\"
@@ -113,6 +118,3 @@ sudo systemctl enable gitea
 sudo systemctl start gitea
 
 sudo systemctl status gitea
-
-echo "Root password : \n"
-echo $ROOT_PASSWORD
