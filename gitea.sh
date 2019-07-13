@@ -9,11 +9,12 @@ sudo apt -y install mariadb-server mariadb-client
 
 CURRENT_MYSQL_PASSWORD=''
 
-echo "Please enter root user MySQL password!"
-read mysql_root_password
+echo 'Hello, type mariadb root password'
+
+read varname
 
 echo "the password you typed is : \n"
-echo $mysql_root_password
+echo $varname
 
 SECURE_MYSQL=$(expect -c "
 set timeout 10
@@ -23,9 +24,9 @@ send \"$CURRENT_MYSQL_PASSWORD\r\"
 expect \"Change the root password?\"
 send \"y\r\"
 expect \"New password:\"
-send \"$mysql_root_password\r\"
+send \"$varname\r\"
 expect \"Re-enter new password:\"
-send \"$mysql_root_password\r\"
+send \"$varname\r\"
 expect \"Remove anonymous users?\"
 send \"y\r\"
 expect \"Disallow root login remotely?\"
