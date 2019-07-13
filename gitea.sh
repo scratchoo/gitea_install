@@ -7,10 +7,38 @@ sudo apt update
 sudo apt -y install nginx
 sudo apt -y install git
 sudo apt -y install mariadb-server mariadb-client
-sudo mysql_secure_installation
+
+CURRENT_MYSQL_PASSWORD=''
+echo "Please enter root user MySQL password!"
+read rootpasswd
+
+SECURE_MYSQL=$(expect -c "
+set timeout 10
+spawn mysql_secure_installation
+expect \"Enter current password for root (enter for none):\"
+send \"$CURRENT_MYSQL_PASSWORD\r\"
+expect \"Change the root password?\"
+send \"y\r\"
+expect \"New password:\"
+send \"${rootpasswd}\r\"
+expect \"Re-enter new password:\"
+send \"${rootpasswd}\r\"
+expect \"Remove anonymous users?\"
+send \"y\r\"
+expect \"Disallow root login remotely?\"
+send \"y\r\"
+expect \"Remove test database and access to it?\"
+send \"y\r\"
+expect \"Reload privilege tables now?\"
+send \"y\r\"
+expect eof
+")
+
+echo "$SECURE_MYSQL"
+
+
 sudo systemctl restart mariadb.service
 
-PASS=`pwgen -s 40 1`
 
 mysql -uroot <<MYSQL_SCRIPT
 CREATE DATABASE gitea;
