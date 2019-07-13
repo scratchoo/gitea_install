@@ -115,3 +115,4 @@ sudo systemctl enable gitea
 sudo systemctl start gitea
 
 sudo systemctl status gitea
+echo $mysql_root_password
