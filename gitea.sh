@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sudo apt update
-apt-get -y install expect
+apt -y install expect
 apt -y install pwgen
 sudo apt -y install nginx
 sudo apt -y install git
@@ -115,4 +115,3 @@ sudo systemctl enable gitea
 sudo systemctl start gitea
 
 sudo systemctl status gitea
-echo $mysql_root_password
