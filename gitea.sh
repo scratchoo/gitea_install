@@ -40,10 +40,12 @@ echo "$SECURE_MYSQL"
 
 sudo systemctl restart mariadb.service
 
+read -p 'mariadb user password: ' mariapwd
+echo thank you, the root pass will be $mariapwd
 
 mysql -uroot <<MYSQL_SCRIPT
 CREATE DATABASE gitea;
-CREATE USER 'giteauser'@'localhost' IDENTIFIED BY '$PASS';
+CREATE USER 'giteauser'@'localhost' IDENTIFIED BY '$mariapwd';
 GRANT ALL PRIVILEGES ON gitea.* TO 'giteauser'@'localhost';
 FLUSH PRIVILEGES;
 MYSQL_SCRIPT
@@ -116,41 +118,26 @@ sudo systemctl status gitea
 
 sudo rm /etc/nginx/sites-enabled/default
 
-sudo touch /etc/nginx/sites-available/git
-
 read -p "what's your gitea domain name ? " domain_name
 
+sudo touch /etc/nginx/sites-available/git
+
+# https://golb.hplar.ch/2018/06/self-hosted-git-server.html
 cat > /etc/nginx/sites-available/git <<EOF
-upstream gitea {
-    server 127.0.0.1:3000;
-}
-
 server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    server_name $domain_name;
-    root /var/lib/gitea/public;
-    access_log off;
-    error_log off;
+    listen 80;
+    listen [::]:80;
+    server_name git.$domain_name;
 
+
+    client_max_body_size 20m;
     location / {
-      try_files maintain.html $uri $uri/index.html @node;
-    }
-
-    location @node {
-      client_max_body_size 0;
-      proxy_pass http://localhost:3000;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_set_header X-Real-IP $remote_addr;
-      proxy_set_header Host $http_host;
-      proxy_set_header X-Forwarded-Proto $scheme;
-      proxy_max_temp_file_size 0;
-      proxy_redirect off;
-      proxy_read_timeout 120;
+        proxy_pass http://localhost:3000;
     }
 }
+
 EOF
 
-sudo ln -s /etc/nginx/sites-available/git /etc/nginx/sites-enabled
-
-sudo systemctl reload nginx.service
+sudo ln -s /etc/nginx/sites-available/git /etc/nginx/sites-enabled/git
+sudo rm /etc/nginx/sites-enabled/default
+sudo systemctl reload nginx
