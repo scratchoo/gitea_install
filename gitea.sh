@@ -11,7 +11,7 @@ sudo apt -y install git
 sudo apt -y install mariadb-server mariadb-client
 
 CURRENT_MYSQL_PASSWORD=''
-ROOT_PASSWORD = `pwgen -s 10 1`
+ROOT_PASSWORD=`pwgen -s 10 1`
 
 SECURE_MYSQL=$(expect -c "
 set timeout 10
