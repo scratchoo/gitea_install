@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# The script will fail at the first error encountered
-set -e
-
 sudo apt update
 apt-get -y install expect
 apt -y install pwgen
