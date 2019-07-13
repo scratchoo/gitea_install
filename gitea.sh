@@ -4,14 +4,14 @@
 set -e
 
 sudo apt update
-apt-get -y install expect
+apt-get install expect
 sudo apt -y install nginx
 sudo apt -y install git
 sudo apt -y install mariadb-server mariadb-client
 
 CURRENT_MYSQL_PASSWORD=''
 echo "Please enter root user MySQL password!"
-read rootpasswd
+read ROOT_PASSWORD
 
 SECURE_MYSQL=$(expect -c "
 set timeout 10
@@ -21,9 +21,9 @@ send \"$CURRENT_MYSQL_PASSWORD\r\"
 expect \"Change the root password?\"
 send \"y\r\"
 expect \"New password:\"
-send \"${rootpasswd}\r\"
+send \"$ROOT_PASSWORD\r\"
 expect \"Re-enter new password:\"
-send \"${rootpasswd}\r\"
+send \"$ROOT_PASSWORD\r\"
 expect \"Remove anonymous users?\"
 send \"y\r\"
 expect \"Disallow root login remotely?\"
@@ -47,10 +47,6 @@ CREATE USER 'giteauser'@'localhost' IDENTIFIED BY '$PASS';
 GRANT ALL PRIVILEGES ON gitea.* TO 'giteauser'@'localhost';
 FLUSH PRIVILEGES;
 MYSQL_SCRIPT
-
-echo "MySQL user created."
-echo "Username:   $1"
-echo "Password:   $PASS"
 
 sudo adduser \
    --system \
