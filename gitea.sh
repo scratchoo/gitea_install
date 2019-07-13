@@ -9,12 +9,7 @@ sudo apt -y install mariadb-server mariadb-client
 
 CURRENT_MYSQL_PASSWORD=''
 
-echo 'Hello, type mariadb root password'
-
-read varname
-
-echo "the password you typed is : \n"
-echo $varname
+varname = 'azerty'
 
 SECURE_MYSQL=$(expect -c "
 set timeout 10
