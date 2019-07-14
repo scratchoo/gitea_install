@@ -2,10 +2,11 @@
 
 sudo apt update
 apt -y install expect
-apt -y install pwgen
+# apt -y install pwgen
 sudo apt -y install nginx
 sudo apt -y install git
-#sudo apt -y install mariadb-server mariadb-client
+
+# ================= Install MariaDB Database Server =======================
 
 sudo apt-get -y install software-properties-common
 sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
@@ -56,6 +57,8 @@ GRANT ALL PRIVILEGES ON gitea.* TO 'giteauser'@'localhost';
 FLUSH PRIVILEGES;
 MYSQL_SCRIPT
 
+# ================= Prepare the Gitea Environment =================
+
 sudo adduser \
    --system \
    --shell /bin/bash \
@@ -72,10 +75,14 @@ sudo mkdir /etc/gitea
 sudo chown root:git /etc/gitea
 sudo chmod 770 /etc/gitea
 
+# ================ Install Gitea =============================
+
 sudo wget -O gitea https://dl.gitea.io/gitea/1.5.0/gitea-1.5.0-linux-amd64
 sudo chmod +x gitea
 
 sudo cp gitea /usr/local/bin/gitea
+
+# ========== Create a service file to start Gitea automatically ===========
 
 sudo touch /etc/systemd/system/gitea.service
 
@@ -122,24 +129,44 @@ sudo systemctl start gitea
 
 sudo systemctl status gitea
 
-sudo rm /etc/nginx/sites-enabled/default
+# Ask for the domain that will be used for gitea
+read -p "what's the domain/subdomain you will use for gitea ? (i.e: example.com or subdomain.example.com) " domain_name
 
-read -p "what's your gitea domain name ? " domain_name
+# ============ Install and setup Let’s Encrypt =========
+
+sudo apt install certbot python-certbot-nginx
+sudo service nginx stop
+sudo certbot certonly --standalone -d $domain_name
+sudo service nginx start
+
+# ====== Configure Nginx as a reverse proxy =======
+
+sudo rm /etc/nginx/sites-enabled/default
 
 sudo touch /etc/nginx/sites-available/git
 
 # https://golb.hplar.ch/2018/06/self-hosted-git-server.html
 cat > /etc/nginx/sites-available/git <<EOF
+
+server {
+   listen 443 ssl;
+   server_name $domain_name;
+   ssl_certificate /etc/letsencrypt/live/$domain_name/fullchain.pem;
+   ssl_certificate_key /etc/letsencrypt/live/$domain_name/privkey.pem;
+
+   location / {
+     proxy_set_header  X-Real-IP  $remote_addr;
+     proxy_pass http://localhost:3000;
+   }
+}
+
+# Redirect HTTP requests to HTTPS
 server {
     listen 80;
     listen [::]:80;
-    server_name git.$domain_name;
-
-
+    server_name $domain_name;
     client_max_body_size 20m;
-    location / {
-        proxy_pass http://localhost:3000;
-    }
+    return 301 https://$host$request_uri;
 }
 
 EOF
