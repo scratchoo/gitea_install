@@ -1,19 +1,14 @@
 # A bash script to intall Gitea + Let's encrypt certificat for you on ubuntu 18.04
 
-## Note :
-The instructions in this script are from on https://www.vultr.com/docs/how-to-install-gitea-on-ubuntu-18-04 
-
-To prevent the error: **The database settings are invalid: Error 1071: Specified key was too long; max key length is 767 bytes** We install mariaDB 10.4 instructions are from: https://computingforgeeks.com/how-to-install-mariadb-10-4-on-ubuntu-18-04-ubuntu-16-04/
-
 # how to use the script ?
 
 Before using this script, please make sure you have DNS setting in place because the (let's encrypt) do a check for you domain before installation, in this example I will use Digitalocean for my server and namecheap as my registrar
 
-### Fee free to use the following link to get $50 when you register for a digitalocean account :
+### We spent a good amount of time to create this script and guide for you... Fee free to use our referral link to get $50 when you register for a digitalocean account (we appreciate your support) :
 
-Get $50 free credit here ---->  https://m.do.co/c/1053282d64cd  (Thank you for using our link)
+Get $50 free credit here ---->  https://m.do.co/c/1053282d64cd  
 
-
+### Now let's get started 
 
 1) Create a vps machine (a droplet if you are using digitalocean)
 
@@ -39,7 +34,7 @@ Digitalocean has a good article for that with different registrar here: https://
 
 **Once you configured your DNS... let's use our script**
 
-First ssh to your remote server
+You need to ssh to your remote server
 
 `ssh root@IP_OF_YOUR_MACHIN`
 
@@ -49,6 +44,8 @@ Then download the script and execute it as the following :
 curl https://raw.githubusercontent.com/scratchoo/gitea_install/master/gitea.sh --output script.sh | chmod +x
 bash script.sh
 ```
+You will be prompt some question (like the root (and user) password for your mariadDB database, also you will be asked for you domain name (if you want to use gitea on a subdomain please specify it in the form : {your_subdomain}.{your_domain}.{com} otherwise you can just specify {your_domain}.{com}
+
 
 # Trouble shooting 
 
@@ -60,3 +57,10 @@ See "systemctl status nginx.service" and "journalctl -xe" for details.
 Then you can check the log file to track the error :
 
 `sudo tail -n 1000 /var/log/nginx/error.log`
+
+
+## Thanks :
+
+The instructions in this script are from on https://www.vultr.com/docs/how-to-install-gitea-on-ubuntu-18-04 
+
+To prevent the error: **The database settings are invalid: Error 1071: Specified key was too long; max key length is 767 bytes** We install mariaDB 10.4 instructions are from: https://computingforgeeks.com/how-to-install-mariadb-10-4-on-ubuntu-18-04-ubuntu-16-04/
