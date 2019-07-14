@@ -17,10 +17,10 @@ CURRENT_MYSQL_PASSWORD=''
 
 read -p 'mariadb root password: ' mariarootpwd
 
-echo thank you, the root pass will be $mariarootpwd
+echo Thank you, MariaDB Root pass will be $mariarootpwd
 
 SECURE_MYSQL=$(expect -c "
-set timeout 10
+# set timeout 10
 spawn mysql_secure_installation
 expect \"Enter current password for root (enter for none):\"
 send \"$CURRENT_MYSQL_PASSWORD\r\"
@@ -46,8 +46,8 @@ echo "$SECURE_MYSQL"
 
 sudo systemctl restart mariadb.service
 
-read -p 'mariadb user password: ' mariapwd
-echo thank you, the root pass will be $mariapwd
+read -p 'MariaDB user password: ' mariapwd
+echo Thank you,  MariaDB user password will be $mariapwd
 
 mysql -uroot <<MYSQL_SCRIPT
 CREATE DATABASE gitea;
@@ -147,3 +147,5 @@ EOF
 sudo ln -s /etc/nginx/sites-available/git /etc/nginx/sites-enabled/git
 
 sudo systemctl reload nginx
+
+echo Thank you ! go to your your_domain.com/install to register a Gitea account :)
