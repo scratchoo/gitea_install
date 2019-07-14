@@ -20,6 +20,8 @@ read -p 'mariadb root password: ' mariarootpwd
 
 echo Thank you, MariaDB Root pass will be $mariarootpwd
 
+echo 'Wait please...'
+
 SECURE_MYSQL=$(expect -c "
 # set timeout 10
 spawn mysql_secure_installation
@@ -134,10 +136,10 @@ read -p "what's the domain/subdomain you will use for gitea ? (i.e: example.com 
 
 # ============ Install and setup Let’s Encrypt =========
 
-sudo apt -y install certbot python-certbot-nginx
+sudo apt install certbot python-certbot-nginx
 sudo service nginx stop
 sudo certbot certonly --standalone -d $domain_name
-sudo service nginx start
+
 
 # ====== Configure Nginx as a reverse proxy =======
 
@@ -149,30 +151,30 @@ sudo touch /etc/nginx/sites-available/git
 cat > /etc/nginx/sites-available/git <<EOF
 
 server {
-   listen 443 ssl;
-   server_name $domain_name;
-   ssl_certificate /etc/letsencrypt/live/$domain_name/fullchain.pem;
-   ssl_certificate_key /etc/letsencrypt/live/$domain_name/privkey.pem;
+    listen 443 ssl;
+    server_name ${domain_name};
+    ssl_certificate /etc/letsencrypt/live/${domain_name}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${domain_name}/privkey.pem;
 
-   location / {
-     proxy_set_header  X-Real-IP  $remote_addr;
-     proxy_pass http://localhost:3000;
-   }
+    location / {
+        proxy_set_header  X-Real-IP  $remote_addr;
+        proxy_pass http://localhost:3000;
+    }
 }
 
 # Redirect HTTP requests to HTTPS
 server {
     listen 80;
-    listen [::]:80;
-    server_name $domain_name;
-    client_max_body_size 20m;
-    return 301 https://$host$request_uri;
+    server_name ${domain_name};
+    return 301 https://\$host\$request_uri;
 }
+
 
 EOF
 
 sudo ln -s /etc/nginx/sites-available/git /etc/nginx/sites-enabled/git
 
-sudo systemctl reload nginx
+# sudo systemctl reload nginx
+sudo service nginx start
 
-echo Thank you ! go to your your_domain.com/install to register a Gitea account :)
+echo "Thank you ! go to your your_domain.com/install to register a Gitea account :)"
