@@ -1,4 +1,4 @@
-# A bash script to intall Gitea
+# A bash script to intall Gitea on ubuntu 18.04
 
 *This script is based on https://www.vultr.com/docs/how-to-install-gitea-on-ubuntu-18-04 *
 
