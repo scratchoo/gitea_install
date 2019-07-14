@@ -61,6 +61,8 @@ Then you can check the log file to track the error :
 
 ## Thanks :
 
-The instructions in this script are from on https://www.vultr.com/docs/how-to-install-gitea-on-ubuntu-18-04 
+The instructions in this script are from on https://www.vultr.com/docs/how-to-install-gitea-on-ubuntu-18-04
 
 To prevent the error: **The database settings are invalid: Error 1071: Specified key was too long; max key length is 767 bytes** We install mariaDB 10.4 instructions are from: https://computingforgeeks.com/how-to-install-mariadb-10-4-on-ubuntu-18-04-ubuntu-16-04/
+
+For the ssl (let's encrypt) part, thanks to https://blog.smoha.org/201810-gitea-nginx-lets-encrypt
