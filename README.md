@@ -9,9 +9,11 @@ To prevent the error: **The database settings are invalid: Error 1071: Specified
 
 Before using this script, please make sure you have DNS setting in place because the (let's encrypt) do a check for you domain before installation, in this example I will use Digitalocean for my server and namecheap as my registrar
 
-## Fee free to use the following link to get $50 when you register for a digitalocean account :
+### Fee free to use the following link to get $50 when you register for a digitalocean account :
 
-https://m.do.co/c/1053282d64cd
+Get $50 free credit here ---->  https://m.do.co/c/1053282d64cd  (Thank you for using our link)
+
+
 
 1) Create a vps machine (a droplet if you are using digitalocean)
 
