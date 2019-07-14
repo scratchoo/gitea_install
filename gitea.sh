@@ -136,7 +136,7 @@ read -p "what's the domain/subdomain you will use for gitea ? (i.e: example.com 
 
 # ============ Install and setup Let’s Encrypt =========
 
-sudo apt install certbot python-certbot-nginx
+sudo apt -y install certbot python-certbot-nginx
 sudo service nginx stop
 sudo certbot certonly --standalone -d $domain_name
 
@@ -157,7 +157,7 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/${domain_name}/privkey.pem;
 
     location / {
-        proxy_set_header  X-Real-IP  $remote_addr;
+        proxy_set_header  X-Real-IP  \$remote_addr;
         proxy_pass http://localhost:3000;
     }
 }
