@@ -60,8 +60,6 @@ Then you can check the log file to track the error :
 
 # TODO
 
-Ask for database user name instead of using "giteauser"
-
 Auto-renew Let's encrypt certificat
 
 ## Thanks :
