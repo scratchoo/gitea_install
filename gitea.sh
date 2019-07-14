@@ -5,6 +5,12 @@ apt -y install expect
 apt -y install pwgen
 sudo apt -y install nginx
 sudo apt -y install git
+#sudo apt -y install mariadb-server mariadb-client
+
+sudo apt-get -y install software-properties-common
+sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
+sudo add-apt-repository "deb [arch=amd64,arm64,ppc64el] http://mariadb.mirror.liquidtelecom.com/repo/10.4/ubuntu $(lsb_release -cs) main"
+sudo apt -y update
 sudo apt -y install mariadb-server mariadb-client
 
 CURRENT_MYSQL_PASSWORD=''
@@ -139,5 +145,5 @@ server {
 EOF
 
 sudo ln -s /etc/nginx/sites-available/git /etc/nginx/sites-enabled/git
-sudo rm /etc/nginx/sites-enabled/default
+
 sudo systemctl reload nginx
