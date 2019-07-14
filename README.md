@@ -58,6 +58,11 @@ Then you can check the log file to track the error :
 
 `sudo tail -n 1000 /var/log/nginx/error.log`
 
+# TODO
+
+Ask for database user name instead of using "giteauser"
+
+Auto-renew Let's encrypt certificat
 
 ## Thanks :
 
