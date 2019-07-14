@@ -134,7 +134,7 @@ read -p "what's the domain/subdomain you will use for gitea ? (i.e: example.com 
 
 # ============ Install and setup Let’s Encrypt =========
 
-sudo apt install certbot python-certbot-nginx
+sudo apt -y install certbot python-certbot-nginx
 sudo service nginx stop
 sudo certbot certonly --standalone -d $domain_name
 sudo service nginx start
