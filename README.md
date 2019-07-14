@@ -9,7 +9,7 @@ To prevent the error: **The database settings are invalid: Error 1071: Specified
 
 Before using this script, please make sure you have DNS setting in place because the (let's encrypt) do a check for you domain before installation, in this example I will use Digitalocean for my server and namecheap as my registrar
 
-**Fee free to use the following link to get $50 when you register for a digitalocean account : **
+## Fee free to use the following link to get $50 when you register for a digitalocean account :
 
 https://m.do.co/c/1053282d64cd
 
@@ -19,7 +19,9 @@ https://m.do.co/c/1053282d64cd
 
 ![alt text](https://github.com/scratchoo/gitea_install/raw/master/digitalocean_domain.png)
 
-3) add basics A records as the following :
+3) add basic A records as the following :
+
+![Adding domain to digitalocea](https://github.com/scratchoo/gitea_install/raw/master/add_domain_digitalocean.png)
 
 4) now go and log in to your domain registrar (namecheap in my case), and change DNS setting to custom DNS, and add the following:
 
