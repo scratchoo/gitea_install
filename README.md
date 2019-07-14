@@ -2,7 +2,7 @@
 
 The instructions in this script are from on https://www.vultr.com/docs/how-to-install-gitea-on-ubuntu-18-04 
 
-we install mariaDB 10.4 thanks to https://computingforgeeks.com/how-to-install-mariadb-10-4-on-ubuntu-18-04-ubuntu-16-04/
+To prevent the error: **The database settings are invalid: Error 1071: Specified key was too long; max key length is 767 bytes** We install mariaDB 10.4 instructions are from: https://computingforgeeks.com/how-to-install-mariadb-10-4-on-ubuntu-18-04-ubuntu-16-04/
 
 # how to use it ?
 
