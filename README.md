@@ -23,14 +23,17 @@ https://m.do.co/c/1053282d64cd
 
 4) now go and log in to your domain registrar (namecheap in my case), and change DNS setting to custom DNS, and add the following:
 
-    ns1.digitalocean.com
-    ns2.digitalocean.com
-    ns3.digitalocean.com
+ns1.digitalocean.com
+ns2.digitalocean.com
+ns3.digitalocean.com
+
+![namecheap with digitalocean DNS](https://github.com/scratchoo/gitea_install/raw/master/namecheap_digitalocean_dns.png)
+
 
 Digitalocean has a good article for that with different registrar here: https://www.digitalocean.com/community/tutorials/how-to-point-to-digitalocean-nameservers-from-common-domain-registrars
 
 
-**Once you configured your DNS... let's use our script **
+**Once you configured your DNS... let's use our script**
 
 First ssh to your remote server
 
