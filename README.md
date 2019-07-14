@@ -6,6 +6,12 @@ we install mariaDB 10.4 thanks to https://computingforgeeks.com/how-to-install-m
 
 # how to use it ?
 
+First ssh to your remote server
+
+`ssh root@IP_OF_YOUR_MACHIN`
+
+Then download the script and execute it as the following :
+
 ```
 curl https://raw.githubusercontent.com/scratchoo/gitea_install/master/gitea.sh --output script.sh | chmod +x
 bash script.sh
