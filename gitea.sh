@@ -52,10 +52,14 @@ sudo systemctl restart mariadb.service
 read -p 'MariaDB user password: ' mariapwd
 echo Thank you,  MariaDB user password will be $mariapwd
 
+read -p 'Database name : ' db_name
+read -p 'Database username : ' db_username
+echo Your database name is $db_name and your database username is $db_username
+
 mysql -uroot <<MYSQL_SCRIPT
-CREATE DATABASE gitea;
-CREATE USER 'giteauser'@'localhost' IDENTIFIED BY '$mariapwd';
-GRANT ALL PRIVILEGES ON gitea.* TO 'giteauser'@'localhost';
+CREATE DATABASE $db_name;
+CREATE USER '$db_username'@'localhost' IDENTIFIED BY '$mariapwd';
+GRANT ALL PRIVILEGES ON $db_name.* TO '$db_username'@'localhost';
 FLUSH PRIVILEGES;
 MYSQL_SCRIPT
 
