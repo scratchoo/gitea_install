@@ -17,6 +17,8 @@ https://m.do.co/c/1053282d64cd
 
 2) Copy the IP address of your virtual machine (vps/droplet) and click add domain
 
+![alt text](https://github.com/scratchoo/gitea_install/raw/master/digitalocean_domain.png)
+
 3) add basics A records as the following :
 
 4) now go and log in to your domain registrar (namecheap in my case), and change DNS setting to custom DNS, and add the following:
