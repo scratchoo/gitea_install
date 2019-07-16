@@ -1,4 +1,4 @@
-# A bash script to intall Gitea + Let's encrypt certificat for you on ubuntu 18.04
+# A bash script to intall Gitea + Let's encrypt certificat (with auto-renew) for you on ubuntu 18.04
 
 # how to use the script ?
 
