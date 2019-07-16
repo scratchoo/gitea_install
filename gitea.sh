@@ -161,7 +161,7 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/${domain_name}/privkey.pem;
 
    location / {
-      try_files maintain.html $uri $uri/index.html @node;
+      try_files maintain.html $uri @node;
    }
 
    location @node {
