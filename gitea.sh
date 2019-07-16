@@ -160,10 +160,21 @@ server {
     ssl_certificate /etc/letsencrypt/live/${domain_name}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${domain_name}/privkey.pem;
 
-    location / {
-        proxy_set_header  X-Real-IP  \$remote_addr;
-        proxy_pass http://${domain_name};
-    }
+   location / {
+      try_files maintain.html $uri $uri/index.html @node;
+   }
+
+   location @node {
+      client_max_body_size 0;
+      proxy_pass http://localhost:3000;
+      proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+      proxy_set_header X-Real-IP \$remote_addr;
+      proxy_set_header Host \$http_host;
+      proxy_set_header X-Forwarded-Proto \$scheme;
+      proxy_max_temp_file_size 0;
+      proxy_redirect off;
+      proxy_read_timeout 120;
+   }
 }
 
 # Redirect HTTP requests to HTTPS
