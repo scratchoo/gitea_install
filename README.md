@@ -63,6 +63,8 @@ Then you can check the log file to track the error :
 Let's encrypt is installed with certbot so the auto-renew will be active after installation 
 see : https://certbot.eff.org/lets-encrypt/ubuntubionic-nginx.html
 
+The cronjob in our case (of ubuntu) can be found in /etc/cron.d/certbot (it will renew the certificate every 30 days, the cronjob itself will be executed everyday twice)
+
 ## Thanks :
 
 The instructions in this script are from on https://www.vultr.com/docs/how-to-install-gitea-on-ubuntu-18-04
