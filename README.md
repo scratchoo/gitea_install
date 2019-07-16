@@ -58,9 +58,10 @@ Then you can check the log file to track the error :
 
 `sudo tail -n 1000 /var/log/nginx/error.log`
 
-# TODO
+## Note :
 
-Auto-renew Let's encrypt certificat
+Let's encrypt is installed with certbot so the auto-renew will be active after installation 
+see : https://certbot.eff.org/lets-encrypt/ubuntubionic-nginx.html
 
 ## Thanks :
 
