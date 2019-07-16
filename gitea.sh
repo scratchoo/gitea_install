@@ -162,7 +162,7 @@ server {
 
     location / {
         proxy_set_header  X-Real-IP  \$remote_addr;
-        proxy_pass http://localhost:3000;
+        proxy_pass http://${domain_name};
     }
 }
 
