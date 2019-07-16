@@ -4,9 +4,11 @@
 
 Before using this script, please make sure you have DNS setting in place because the (let's encrypt) do a check for you domain before installation, in this example I will use Digitalocean for my server and namecheap as my registrar
 
-### We spent a good amount of time to create this script and guide for you... Fee free to use our referral link to get $50 when you register for a digitalocean account (we appreciate your support) :
+### We spent a good amount of time to create this script and guide for you... Fee free to use our referral link to get $50 when you register for a Digitalocean account, or Vultr account (we appreciate your support) :
 
-Get $50 free credit here ---->  https://m.do.co/c/1053282d64cd  
+Get $50 free credit when you sign up with Digitalocean ---->  https://m.do.co/c/1053282d64cd  
+
+Get $50 free credit when you sign up with Vultr ---> https://www.vultr.com/?ref=8199794-4F
 
 ### Now let's get started 
 
