@@ -5,6 +5,7 @@ UBUNTU_VERSION=18.04
 RUBY_VERSION=2.7.0
 BUNDLER_VERSION="" # keep it as empty string if you want to intsall the latest bundler version
 APP_NAME="myapp"
+POSTGRES_USERNAME="deployer"
 POSTGRES_PASSWORD="test"
 
 
@@ -35,11 +36,13 @@ sudo apt-get -yqq install software-properties-common
 
 sudo apt-add-repository -y ppa:rael-gc/rvm
 sudo apt-get update
-sudo apt-get install rvm
+sudo apt-get -y install rvm
 
 echo 'source "/etc/profile.d/rvm.sh"' >> ~/.bashrc
 
 source ~/.rvm/scripts/rvm
+
+source /etc/profile.d/rvm.sh  # https://github.com/rvm/ubuntu_rvm/issues/37
 
 rvm install $RUBY_VERSION
 
@@ -118,8 +121,8 @@ sudo service nginx reload
 sudo apt-get -yqq install postgresql postgresql-contrib libpq-dev
 sudo su - postgres
 # createuser --pwprompt deploy
-psql -c "create role deployer with login password '$POSTGRES_PASSWORD';"
-createdb -O deploy $APP_NAME
+psql -c "create role $POSTGRES_USERNAME with login password '$POSTGRES_PASSWORD';"
+createdb -O $POSTGRES_USERNAME $APP_NAME
 exit
 
 exec $SHELL
