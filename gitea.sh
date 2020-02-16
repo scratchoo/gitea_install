@@ -1,9 +1,9 @@
 #!/bin/bash
 
-UBUNTU_VERSION = 18.04
-RUBY_VERSION = 2.7.0
-BUNDLER_VERSION = "" # keep it as empty string if you want to intsall the latest bundler version
-APP_NAME = "myapp"
+ubuntu_version = 18.04
+ruby_version = 2.7.0
+bundler_version = "" # keep it as empty string if you want to intsall the latest bundler version
+app_name = "myapp"
 
 
 # adduser deployer
@@ -39,21 +39,21 @@ echo 'source "/etc/profile.d/rvm.sh"' >> ~/.bashrc
 
 source ~/.rvm/scripts/rvm
 
-rvm install $RUBY_VERSION
+rvm install $ruby_version
 
-rvm use $RUBY_VERSION --default
+rvm use $ruby_version --default
 
 ruby -v
 
-if [ -z "$BUNDLER_VERSION" ]
+if [ -z "$bundler_version" ]
 then
-  # $BUNDLER_VERSION is empty
+  # $bundler_version is empty
   # Install the latest Bundler
   gem install bundler
 else
-  # $BUNDLER_VERSION is NOT empty
+  # $bundler_version is NOT empty
   # For older apps that require a specific Bundler version.
-  gem install bundler -v $BUNDLER_VERSION
+  gem install bundler -v $bundler_version
 fi
 
 # Test and make sure bundler is installed correctly, you should see a version number.
@@ -73,7 +73,7 @@ if [ ! -f /etc/nginx/modules-enabled/50-mod-http-passenger.conf ]; then sudo ln 
 sudo ls /etc/nginx/conf.d/mod-http-passenger.conf
 
 # want to change the passenger_ruby line to match the following: passenger_ruby /home/deploy/.rbenv/shims/ruby;
-sed -i "s/passenger_ruby.*/passenger_ruby \/home\/deploy\/.rvm\/wrappers\/ruby-$RUBY_VERSION\/ruby;" /etc/nginx/conf.d/mod-http-passenger.conf
+sed -i "s/passenger_ruby.*/passenger_ruby \/home\/deploy\/.rvm\/wrappers\/ruby-$ruby_version\/ruby;" /etc/nginx/conf.d/mod-http-passenger.conf
 
 sudo service nginx start
 
@@ -81,21 +81,21 @@ sudo service nginx start
 
 sudo rm /etc/nginx/sites-enabled/default
 
-sudo touch /etc/nginx/sites-enabled/$APP_NAME
+sudo touch /etc/nginx/sites-enabled/$app_name
 
-cat > /etc/nginx/sites-enabled/$APP_NAME <<EOF
+cat > /etc/nginx/sites-enabled/$app_name <<EOF
 server {
   listen 80;
   listen [::]:80;
 
   server_name _;
-  root /home/deploy/$APP_NAME/current/public;
+  root /home/deploy/$app_name/current/public;
 
   passenger_enabled on;
   passenger_app_env production;
 
   location /cable {
-    passenger_app_group_name $APP_NAME_websocket;
+    passenger_app_group_name $app_name_websocket;
     passenger_force_max_concurrent_requests_per_process 0;
   }
 
@@ -116,7 +116,7 @@ sudo service nginx reload
 sudo apt-get -yqq install postgresql postgresql-contrib libpq-dev
 sudo su - postgres
 createuser --pwprompt deploy
-createdb -O deploy $APP_NAME
+createdb -O deploy $app_name
 exit
 
 exec $SHELL
