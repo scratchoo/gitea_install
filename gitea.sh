@@ -5,6 +5,7 @@ UBUNTU_VERSION=18.04
 RUBY_VERSION=2.7.0
 BUNDLER_VERSION="" # keep it as empty string if you want to intsall the latest bundler version
 APP_NAME="myapp"
+POSTGRES_PASSWORD="test"
 
 
 # adduser deployer
@@ -116,7 +117,8 @@ sudo service nginx reload
 
 sudo apt-get -yqq install postgresql postgresql-contrib libpq-dev
 sudo su - postgres
-createuser --pwprompt deploy
+# createuser --pwprompt deploy
+psql -c "create role deployer with login password '$POSTGRES_PASSWORD';"
 createdb -O deploy $APP_NAME
 exit
 
