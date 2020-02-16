@@ -1,195 +1,122 @@
 #!/bin/bash
 
-sudo apt update
-apt -y install expect
-# apt -y install pwgen
-sudo apt -y install nginx
-sudo apt -y install git
-
-# ================= Install MariaDB Database Server =======================
-
-sudo apt-get -y install software-properties-common
-sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
-sudo add-apt-repository "deb [arch=amd64,arm64,ppc64el] http://mariadb.mirror.liquidtelecom.com/repo/10.4/ubuntu $(lsb_release -cs) main"
-sudo apt -y update
-sudo apt -y install mariadb-server mariadb-client
-
-CURRENT_MYSQL_PASSWORD=''
-
-read -p 'mariadb root password: ' mariarootpwd
-
-echo Thank you, MariaDB Root pass will be $mariarootpwd
-
-echo 'Wait please...'
-
-SECURE_MYSQL=$(expect -c "
-# set timeout 10
-spawn mysql_secure_installation
-expect \"Enter current password for root (enter for none):\"
-send \"$CURRENT_MYSQL_PASSWORD\r\"
-expect \"Change the root password?\"
-send \"y\r\"
-expect \"New password:\"
-send \"$mariarootpwd\r\"
-expect \"Re-enter new password:\"
-send \"$mariarootpwd\r\"
-expect \"Remove anonymous users?\"
-send \"y\r\"
-expect \"Disallow root login remotely?\"
-send \"y\r\"
-expect \"Remove test database and access to it?\"
-send \"y\r\"
-expect \"Reload privilege tables now?\"
-send \"y\r\"
-expect eof
-")
-
-echo "$SECURE_MYSQL"
+UBUNTU_VERSION = 18.04
+RUBY_VERSION = 2.7.0
+BUNDLER_VERSION = "" # keep it as empty string if you want to intsall the latest bundler version
+APP_NAME = "myapp"
 
 
-sudo systemctl restart mariadb.service
+# adduser deployer
+# # Enter new UNIX password:
+# adduser deployer sudo
+# su - deployer
 
-read -p 'MariaDB user password: ' mariapwd
-echo Thank you,  MariaDB user password will be $mariapwd
+# Adding Node.js 10 repository
+curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 
-read -p 'Database name : ' db_name
-read -p 'Database username : ' db_username
-echo Your database name is $db_name and your database username is $db_username
+# Adding Yarn repository
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
 
-mysql -uroot <<MYSQL_SCRIPT
-CREATE DATABASE $db_name;
-CREATE USER '$db_username'@'localhost' IDENTIFIED BY '$mariapwd';
-GRANT ALL PRIVILEGES ON $db_name.* TO '$db_username'@'localhost';
-FLUSH PRIVILEGES;
-MYSQL_SCRIPT
+yes "" | sudo add-apt-repository ppa:chris-lea/redis-server
 
-# ================= Prepare the Gitea Environment =================
+# Refresh our packages list with the new repositories
+sudo apt-get update
 
-sudo adduser \
-   --system \
-   --shell /bin/bash \
-   --gecos 'Git Version Control' \
-   --group \
-   --disabled-password \
-   --home /home/git \
-   git
+# Install our dependencies for compiiling Ruby along with Node.js and Yarn
+sudo apt-get -yqq install git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev software-properties-common libffi-dev dirmngr gnupg apt-transport-https ca-certificates redis-server redis-tools nodejs yarn
 
-sudo mkdir -p /var/lib/gitea/{custom,data,indexers,public,log}
-sudo chown git:git /var/lib/gitea/{data,indexers,log}
-sudo chmod 750 /var/lib/gitea/{data,indexers,log}
-sudo mkdir /etc/gitea
-sudo chown root:git /etc/gitea
-sudo chmod 770 /etc/gitea
+# Installing rvm
+gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
 
-# ================ Install Gitea =============================
+sudo apt-get -yqq install software-properties-common
 
-sudo wget -O gitea https://dl.gitea.io/gitea/1.5.0/gitea-1.5.0-linux-amd64
-sudo chmod +x gitea
+sudo apt-add-repository -y ppa:rael-gc/rvm
+sudo apt-get update
+sudo apt-get install rvm
 
-sudo cp gitea /usr/local/bin/gitea
+echo 'source "/etc/profile.d/rvm.sh"' >> ~/.bashrc
 
-# ========== Create a service file to start Gitea automatically ===========
+source ~/.rvm/scripts/rvm
 
-sudo touch /etc/systemd/system/gitea.service
+rvm install $RUBY_VERSION
 
+rvm use $RUBY_VERSION --default
 
-cat > /etc/systemd/system/gitea.service <<EOF
-[Unit]
-Description=Gitea (Git with a cup of tea)
-After=syslog.target
-After=network.target
-#After=mysqld.service
-#After=postgresql.service
-#After=memcached.service
-#After=redis.service
+ruby -v
 
-[Service]
-# Modify these two values and uncomment them if you have
-# repos with lots of files and get an HTTP error 500 because
-# of that
-###
-#LimitMEMLOCK=infinity
-#LimitNOFILE=65535
-RestartSec=2s
-Type=simple
-User=git
-Group=git
-WorkingDirectory=/var/lib/gitea/
-ExecStart=/usr/local/bin/gitea web -c /etc/gitea/app.ini
-Restart=always
-Environment=USER=git HOME=/home/git GITEA_WORK_DIR=/var/lib/gitea
-# If you want to bind Gitea to a port below 1024 uncomment
-# the two values below
-###
-#CapabilityBoundingSet=CAP_NET_BIND_SERVICE
-#AmbientCapabilities=CAP_NET_BIND_SERVICE
+if [ -z "$BUNDLER_VERSION" ]
+then
+  # $BUNDLER_VERSION is empty
+  # Install the latest Bundler
+  gem install bundler
+else
+  # $BUNDLER_VERSION is NOT empty
+  # For older apps that require a specific Bundler version.
+  gem install bundler -v $BUNDLER_VERSION
+fi
 
-[Install]
-WantedBy=multi-user.target
+# Test and make sure bundler is installed correctly, you should see a version number.
+bundle -v
 
-EOF
+# Installing NGINX & Passenger
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 561F9B9CAC40B2F7
 
-sudo systemctl daemon-reload
-sudo systemctl enable gitea
-sudo systemctl start gitea
+sudo sh -c 'echo deb https://oss-binaries.phusionpassenger.com/apt/passenger bionic main > /etc/apt/sources.list.d/passenger.list'
 
-sudo systemctl status gitea
+sudo apt-get update
 
-# Ask for the domain that will be used for gitea
-read -p "what's the domain/subdomain you will use for gitea ? (i.e: example.com or subdomain.example.com) " domain_name
+sudo apt-get install -yqq nginx-extras libnginx-mod-http-passenger
 
-# ============ Install and setup Let’s Encrypt =========
+if [ ! -f /etc/nginx/modules-enabled/50-mod-http-passenger.conf ]; then sudo ln -s /usr/share/nginx/modules-available/mod-http-passenger.load /etc/nginx/modules-enabled/50-mod-http-passenger.conf ; fi
 
-sudo apt -y install certbot python-certbot-nginx
-sudo service nginx stop
-sudo certbot certonly --standalone -d $domain_name
+sudo ls /etc/nginx/conf.d/mod-http-passenger.conf
 
+# want to change the passenger_ruby line to match the following: passenger_ruby /home/deploy/.rbenv/shims/ruby;
+sed -i "s/passenger_ruby.*/passenger_ruby \/home\/deploy\/.rvm\/wrappers\/ruby-$RUBY_VERSION\/ruby;" /etc/nginx/conf.d/mod-http-passenger.conf
 
-# ====== Configure Nginx as a reverse proxy =======
+sudo service nginx start
+
+# Next we're going to remove this default NGINX server and add one for our application instead.
 
 sudo rm /etc/nginx/sites-enabled/default
 
-sudo touch /etc/nginx/sites-available/git
+sudo touch /etc/nginx/sites-enabled/$APP_NAME
 
-# https://golb.hplar.ch/2018/06/self-hosted-git-server.html
-cat > /etc/nginx/sites-available/git <<EOF
-
+cat > /etc/nginx/sites-enabled/$APP_NAME <<EOF
 server {
-    listen 443 ssl;
-    server_name ${domain_name};
-    ssl_certificate /etc/letsencrypt/live/${domain_name}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/${domain_name}/privkey.pem;
+  listen 80;
+  listen [::]:80;
 
-   location / {
-      try_files maintain.html $uri @node;
-   }
+  server_name _;
+  root /home/deploy/$APP_NAME/current/public;
 
-   location @node {
-      client_max_body_size 0;
-      proxy_pass http://localhost:3000;
-      proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-      proxy_set_header X-Real-IP \$remote_addr;
-      proxy_set_header Host \$http_host;
-      proxy_set_header X-Forwarded-Proto \$scheme;
-      proxy_max_temp_file_size 0;
-      proxy_redirect off;
-      proxy_read_timeout 120;
-   }
+  passenger_enabled on;
+  passenger_app_env production;
+
+  location /cable {
+    passenger_app_group_name $APP_NAME_websocket;
+    passenger_force_max_concurrent_requests_per_process 0;
+  }
+
+  # Allow uploads up to 100MB in size
+  client_max_body_size 100m;
+
+  location ~ ^/(assets|packs) {
+    expires max;
+    gzip_static on;
+  }
 }
-
-# Redirect HTTP requests to HTTPS
-server {
-    listen 80;
-    server_name ${domain_name};
-    return 301 https://\$host\$request_uri;
-}
-
-
 EOF
 
-sudo ln -s /etc/nginx/sites-available/git /etc/nginx/sites-enabled/git
+sudo service nginx reload
 
-# sudo systemctl reload nginx
-sudo service nginx start
+# Creating a PostgreSQL Database
 
-echo "Thank you ! go to your your_domain.com/install to register a Gitea account :)"
+sudo apt-get -yqq install postgresql postgresql-contrib libpq-dev
+sudo su - postgres
+createuser --pwprompt deploy
+createdb -O deploy $APP_NAME
+exit
+
+exec $SHELL
